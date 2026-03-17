@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>সরিফ অয়েল স্টোর</title>
+    <style>
+        .product-card { border: 1px solid #fbca03; padding: 20px; margin: 10px; text-align: center; }
+        nav { background: #333; color: white; padding: 10px; }
+    </style>
+</head>
+<body>
+    <nav>সরিফ অয়েল বিসনেস</nav>
+    <h1>আমাদের তেলের মূল্য তালিকা</h1>
+    <div id="product-list">লোডিং হচ্ছে...</div>
+
+    <script type="module">
+        import { db } from './config.js';
+        import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const loadData = async () => {
+            const querySnapshot = await getDocs(collection(db, "products"));
+            let html = "";
+            querySnapshot.forEach((doc) => {
+                html += `<div class="product-card">
+                            <h3>${doc.id}</h3>
+                            <p>দাম: ৳${doc.data().price} (প্রতি লিটার)</p>
+                         </div>`;
+            });
+            document.getElementById('product-list').innerHTML = html;
+        };
+        loadData();
+    </script>
+</body>
+</html>
