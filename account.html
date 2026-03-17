@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport">
+    <title>অ্যাকাউন্ট ম্যানেজমেন্ট - সরিফ অয়েল</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #f39c12; --dark: #2c3e50; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; transition: all 0.3s; }
+        
+        /* Desktop Mode Class */
+        .desktop-view { max-width: 1200px !important; margin: auto; zoom: 0.8; }
+
+        .container { padding: 20px; max-width: 500px; margin: auto; }
+        .mode-switch { text-align: right; margin-bottom: 10px; }
+        .btn-mode { padding: 5px 15px; cursor: pointer; background: var(--dark); color: white; border: none; border-radius: 20px; }
+
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-top: 20px; }
+        .card h2 { text-align: center; color: var(--dark); margin-top: 0; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+
+        .btn-save { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        
+        /* প্রোফাইল ডিসপ্লে কার্ড */
+        .profile-display { display: none; margin-top: 30px; text-align: center; }
+        .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); }
+        .info-box { background: #fffdf0; padding: 15px; border-radius: 10px; border-left: 5px solid var(--primary); margin-top: 15px; text-align: left; }
+    </style>
+</head>
+<body id="bodyTag">
+
+<div class="container">
+    <div class="mode-switch">
+        <button class="btn-mode" onclick="toggleMode()"><i class="fas fa-desktop"></i> Desktop/Mobile Mode</button>
+    </div>
+
+    <div class="card" id="formCard">
+        <h2><i class="fas fa-user-plus"></i> Add Account</h2>
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="fullName" placeholder="পুরো নাম লিখুন">
+        </div>
+        <div class="input-group">
+            <label>Mobile (Login ID)</label>
+            <input type="number" id="mobile" placeholder="মোবাইল নম্বর">
+        </div>
+        <div class="input-group">
+            <label>Address</label>
+            <input type="text" id="address" placeholder="ঠিকানা">
+        </div>
+        <div class="input-group">
+            <label>Image URL Link</label>
+            <input type="text" id="imgUrl" placeholder="https://image-link.com">
+        </div>
+        <button class="btn-save" onclick="saveAccount()">Save Account</button>
+    </div>
+
+    <div id="profileDisplay" class="card profile-display">
+        <img id="displayImg" src="" class="profile-img" alt="Profile">
+        <h3 id="displayName">Name</h3>
+        <div class="info-box">
+            <p><strong><i class="fas fa-id-badge"></i> ID:</strong> <span id="displayMobile"></span></p>
+            <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> <span id="displayAddress"></span></p>
+        </div>
+        <button class="btn-save" style="margin-top:10px; background:#2c3e50;" onclick="location.reload()">Add New</button>
+    </div>
+</div>
+
+<script type="module">
+    import { db } from './config.js';
+    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ১. ডাটা সেভ করার ফাংশন
+    window.saveAccount = async () => {
+        const name = document.getElementById('fullName').value;
+        const mobile = document.getElementById('mobile').value;
+        const address = document.getElementById('address').value;
+        const img = document.getElementById('imgUrl').value || 'https://via.placeholder.com/100';
+
+        if(!name || !mobile) return alert("নাম এবং মোবাইল নম্বর অবশ্যই দিন!");
+
+        try {
+            await setDoc(doc(db, "accounts", mobile), {
+                fullName: name,
+                mobile: mobile,
+                address: address,
+                imageUrl: img,
+                timestamp: new Date()
+            });
+
+            // UI আপডেট করা (Card দেখানো)
+            document.getElementById('formCard').style.display = 'none';
+            document.getElementById('profileDisplay').style.display = 'block';
+            
+            document.getElementById('displayName').innerText = name;
+            document.getElementById('displayMobile').innerText = mobile;
+            document.getElementById('displayAddress').innerText = address;
+            document.getElementById('displayImg').src = img;
+
+            alert("অ্যাকাউন্ট তৈরি হয়েছে!");
+        } catch (e) {
+            alert("Error: " + e.message);
+        }
+    };
+
+    // ২. ম্যানুয়াল ডেস্কটপ/মোবাইল মোড সুইচ
+    window.toggleMode = () => {
+        const body = document.getElementById('bodyTag');
+        body.classList.toggle('desktop-view');
+        alert(body.classList.contains('desktop-view') ? "Desktop Mode On" : "Mobile Mode On");
+    };
+</script>
+
+</body>
+</html>
