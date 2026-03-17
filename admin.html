@@ -1,31 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>অ্যাডমিন প্যানেল</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অ্যাডমিন ড্যাশবোর্ড - সরিফ অয়েল</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { padding: 20px; font-family: sans-serif; }
-        .form-group { margin-bottom: 15px; border: 1px solid #ddd; padding: 15px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .header { text-align: center; margin-bottom: 40px; color: #333; }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            background-color: #fffdf0; /* হালকা হলদে আভা তেলের ব্যবসার জন্য */
+        }
+
+        .card i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #f39c12; /* গোল্ডেন অয়েল কালার */
+        }
+
+        .card h3 { margin: 10px 0; font-size: 22px; }
+        .card p { color: #777; font-size: 14px; }
+
+        .logout-btn {
+            display: block;
+            width: 100px;
+            margin: 40px auto;
+            padding: 10px;
+            background: #e74c3c;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
-    <h1>তেলের স্টক আপডেট করুন</h1>
-    <div class="form-group">
-        <input type="text" id="oilName" placeholder="তেলের নাম (যেমন: সরিষার তেল)">
-        <input type="number" id="oilPrice" placeholder="প্রতি লিটার দাম">
-        <button onclick="updatePrice()">আপডেট করুন</button>
+
+    <div class="header">
+        <h1>সরিফ অয়েল অ্যাডমিন প্যানেল</h1>
+        <p>আপনার ব্যবসা এখান থেকে পরিচালনা করুন</p>
     </div>
 
-    <script type="module">
-        import { db } from './config.js';
-        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <div class="dashboard-container">
+        <a href="account.html" class="card">
+            <i class="fas fa-user-circle"></i>
+            <h3>Account</h3>
+            <p>ইউজার প্রোফাইল ও সেটিংস</p>
+        </a>
 
-        window.updatePrice = async () => {
-            const name = document.getElementById('oilName').value;
-            const price = document.getElementById('oilPrice').value;
-            try {
-                await setDoc(doc(db, "products", name), { price: price, lastUpdate: new Date() });
-                alert("দাম আপডেট হয়েছে!");
-            } catch (e) { console.error(e); }
+        <a href="stock.html" class="card">
+            <i class="fas fa-boxes-stacked"></i>
+            <h3>Stock</h3>
+            <p>তেলের পরিমাণ ও নতুন স্টক</p>
+        </a>
+
+        <a href="book.html" class="card">
+            <i class="fas fa-book-open"></i>
+            <h3>Book</h3>
+            <p>হিসাব-নিকাশ ও মেমো</p>
+        </a>
+    </div>
+
+    <a href="#" class="logout-btn" id="logout">লগআউট</a>
+
+    <script type="module">
+        import { auth } from './config.js';
+        import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // লগইন না থাকলে বের করে দেবে
+        onAuthStateChanged(auth, (user) => {
+            if (!user) window.location.href = "login.html";
+        });
+
+        // লগআউট ফাংশন
+        document.getElementById('logout').onclick = () => {
+            signOut(auth).then(() => window.location.href = "login.html");
         };
     </script>
 </body>
