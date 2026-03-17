@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>অ্যাডমিন লগইন - সরিফ অয়েল</title>
+    <style>
+        body { font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f4f4; }
+        .login-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { display: block; width: 100%; margin: 10px 0; padding: 10px; }
+        button { width: 100%; padding: 10px; background: #27ae60; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>অ্যাডমিন লগইন</h2>
+        <input type="email" id="email" placeholder="ইমেইল">
+        <input type="password" id="password" placeholder="পাসওয়ার্ড">
+        <button onclick="login()">প্রবেশ করুন</button>
+    </div>
+
+    <script type="module">
+        import { auth } from './config.js';
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        window.login = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                window.location.href = "admin.html";
+            } catch (error) { alert("ভুল ইমেইল বা পাসওয়ার্ড!"); }
+        };
+    </script>
+</body>
+</html>
